@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useEffect,
   useState,
 } from "react";
@@ -7,12 +9,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Menu from "./components/Menu";
 import FoodGallery from "./components/FoodGallery";
-import Checkout from "./components/Checkout";
-import OrderHistory from "./components/OrderHistory";
-import AdminOrders from "./components/AdminOrders";
 import AuthModal from "./components/AuthModal";
-import ChatBot from "./components/ChatBot";
-import ResetPassword from "./components/ResetPassword";
 
 import About from "./components/About";
 import Testimonials from "./components/Testimonials";
@@ -24,6 +21,32 @@ import CartProvider from "./context/CartContext";
 import AuthProvider, {
   useAuth,
 } from "./context/AuthContext";
+
+/*
+ * Lazy-loaded pages/components
+ *
+ * These components are not needed on the initial
+ * Home page load, so they are loaded only when required.
+ */
+const Checkout = lazy(
+  () => import("./components/Checkout")
+);
+
+const OrderHistory = lazy(
+  () => import("./components/OrderHistory")
+);
+
+const AdminOrders = lazy(
+  () => import("./components/AdminOrders")
+);
+
+const ChatBot = lazy(
+  () => import("./components/ChatBot")
+);
+
+const ResetPassword = lazy(
+  () => import("./components/ResetPassword")
+);
 
 function navigateTo(path) {
   if (window.location.pathname === path) {
@@ -37,9 +60,22 @@ function navigateTo(path) {
   );
 }
 
+function PageLoader() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-700 border-t-orange-500" />
+
+        <p className="text-sm font-medium text-slate-400">
+          Loading...
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function AppContent({
   currentPath,
-  onPathChange,
 }) {
   const {
     user,
@@ -114,9 +150,11 @@ function AppContent({
    */
   if (isCheckoutPage) {
     return (
-      <Checkout
-        onBack={handleBackToRestaurant}
-      />
+      <Suspense fallback={<PageLoader />}>
+        <Checkout
+          onBack={handleBackToRestaurant}
+        />
+      </Suspense>
     );
   }
 
@@ -125,9 +163,11 @@ function AppContent({
    */
   if (isOrderHistoryPage) {
     return (
-      <OrderHistory
-        onBack={handleBackToRestaurant}
-      />
+      <Suspense fallback={<PageLoader />}>
+        <OrderHistory
+          onBack={handleBackToRestaurant}
+        />
+      </Suspense>
     );
   }
 
@@ -167,9 +207,11 @@ function AppContent({
     }
 
     return (
-      <AdminOrders
-        onBack={handleBackToRestaurant}
-      />
+      <Suspense fallback={<PageLoader />}>
+        <AdminOrders
+          onBack={handleBackToRestaurant}
+        />
+      </Suspense>
     );
   }
 
@@ -205,7 +247,10 @@ function AppContent({
 
       <Footer />
       <BackToTop />
-      <ChatBot />
+
+      <Suspense fallback={null}>
+        <ChatBot />
+      </Suspense>
     </>
   );
 }
@@ -244,7 +289,11 @@ function App() {
     );
 
   if (isResetPasswordPage) {
-    return <ResetPassword />;
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <ResetPassword />
+      </Suspense>
+    );
   }
 
   return (
@@ -252,7 +301,6 @@ function App() {
       <CartProvider>
         <AppContent
           currentPath={currentPath}
-          onPathChange={setCurrentPath}
         />
 
         <AuthModal />
