@@ -136,10 +136,8 @@ function OrderCard({
       }}
       className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/70 shadow-xl shadow-black/10"
     >
-      {/* Main row */}
       <div className="p-5 sm:p-6">
         <div className="grid gap-6 xl:grid-cols-[1.2fr_1.3fr_0.8fr_0.9fr_1fr_1.2fr_auto] xl:items-center">
-          {/* Order */}
           <div>
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-400">
@@ -158,7 +156,6 @@ function OrderCard({
             </div>
           </div>
 
-          {/* Customer */}
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-slate-600">
               Customer
@@ -177,7 +174,6 @@ function OrderCard({
             </p>
           </div>
 
-          {/* Type */}
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-slate-600">
               Type
@@ -202,7 +198,6 @@ function OrderCard({
             </div>
           </div>
 
-          {/* Total */}
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-slate-600">
               Total
@@ -217,7 +212,6 @@ function OrderCard({
             </p>
           </div>
 
-          {/* Payment */}
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-slate-600">
               Payment
@@ -236,7 +230,6 @@ function OrderCard({
             </p>
           </div>
 
-          {/* Status */}
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-slate-600">
               Status
@@ -285,7 +278,6 @@ function OrderCard({
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -318,7 +310,6 @@ function OrderCard({
         </div>
       </div>
 
-      {/* Expanded details */}
       {expanded && (
         <motion.div
           initial={{
@@ -332,7 +323,6 @@ function OrderCard({
           className="border-t border-slate-800 bg-slate-950/30"
         >
           <div className="grid gap-5 p-5 sm:p-6 lg:grid-cols-3">
-            {/* Items */}
             <div className="lg:col-span-2">
               <h3 className="mb-3 text-sm font-black text-white">
                 Ordered Items
@@ -379,7 +369,6 @@ function OrderCard({
               </div>
             </div>
 
-            {/* Customer details */}
             <div>
               <h3 className="mb-3 text-sm font-black text-white">
                 Order Information
@@ -595,7 +584,7 @@ function AdminOrders({ onBack }) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            orderStatus,
+            status: orderStatus,
           }),
         }
       );
@@ -819,7 +808,6 @@ function AdminOrders({ onBack }) {
   return (
     <section className="min-h-screen bg-slate-950 px-4 py-24 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1600px]">
-        {/* Top navigation */}
         <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="button"
@@ -853,7 +841,6 @@ function AdminOrders({ onBack }) {
           </button>
         </div>
 
-        {/* Heading */}
         <div className="mb-8">
           <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-orange-400">
             Administration
@@ -869,7 +856,6 @@ function AdminOrders({ onBack }) {
           </p>
         </div>
 
-        {/* Stats */}
         {!loading && !error && (
           <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
@@ -924,11 +910,9 @@ function AdminOrders({ onBack }) {
           </div>
         )}
 
-        {/* Filters */}
         {!loading && !error && (
           <div className="mb-6 rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-              {/* Search */}
               <div className="relative flex-1">
                 <Search
                   size={16}
@@ -948,7 +932,6 @@ function AdminOrders({ onBack }) {
                 />
               </div>
 
-              {/* Status */}
               <div className="relative">
                 <Filter
                   size={15}
@@ -986,7 +969,6 @@ function AdminOrders({ onBack }) {
                 />
               </div>
 
-              {/* Payment */}
               <div className="relative">
                 <DollarSign
                   size={15}
@@ -1024,7 +1006,6 @@ function AdminOrders({ onBack }) {
                 />
               </div>
 
-              {/* Clear */}
               {hasFilters && (
                 <button
                   type="button"
@@ -1039,7 +1020,6 @@ function AdminOrders({ onBack }) {
           </div>
         )}
 
-        {/* Loading */}
         {loading && (
           <div className="flex min-h-[350px] items-center justify-center rounded-3xl border border-slate-800 bg-slate-900/50">
             <div className="text-center">
@@ -1055,7 +1035,6 @@ function AdminOrders({ onBack }) {
           </div>
         )}
 
-        {/* Error */}
         {!loading && error && (
           <div className="rounded-3xl border border-red-500/20 bg-red-500/5 p-10 text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-red-400">
@@ -1083,7 +1062,6 @@ function AdminOrders({ onBack }) {
           </div>
         )}
 
-        {/* Empty */}
         {!loading &&
           !error &&
           orders.length === 0 && (
@@ -1103,7 +1081,6 @@ function AdminOrders({ onBack }) {
             </div>
           )}
 
-        {/* Orders */}
         {!loading &&
           !error &&
           orders.length > 0 && (
