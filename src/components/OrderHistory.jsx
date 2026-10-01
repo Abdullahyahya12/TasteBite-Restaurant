@@ -24,7 +24,7 @@ import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 
-function OrderHistory() {
+function OrderHistory({ onBack }) {
   const { token } = useAuth();
 
   const [orders, setOrders] = useState([]);
@@ -96,7 +96,9 @@ function OrderHistory() {
   // =====================================================
 
   const handleGoBack = () => {
-    window.location.href = "/#home";
+    if (typeof onBack === "function") {
+      onBack();
+    }
   };
 
   // =====================================================
