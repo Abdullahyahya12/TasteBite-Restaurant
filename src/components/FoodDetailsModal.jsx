@@ -1,4 +1,3 @@
-
 import {
   Minus,
   Plus,
@@ -119,15 +118,14 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
             transition={{
               duration: 0.6,
             }}
-            className="pointer-events-none fixed left-1/2 top-1/2 z-[81] h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-500/[0.08] blur-[130px]"
+            className="pointer-events-none fixed left-1/2 top-1/2 z-[81] h-[350px] w-[350px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-500/[0.08] blur-[100px] sm:h-[500px] sm:w-[500px] sm:blur-[130px]"
           />
 
           {/* =====================================================
               MODAL WRAPPER
           ====================================================== */}
 
-          <div className="fixed inset-0 z-[90] flex items-center justify-center overflow-y-auto px-3 py-4 sm:px-6 sm:py-8">
-
+          <div className="fixed inset-0 z-[90] flex items-start justify-center overflow-y-auto overscroll-contain px-3 py-3 sm:items-center sm:px-6 sm:py-8">
             <motion.div
               initial={{
                 opacity: 0,
@@ -148,7 +146,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                 duration: 0.45,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="relative my-auto w-full max-w-5xl overflow-hidden rounded-[1.75rem] border border-white/[0.1] bg-slate-950 shadow-2xl shadow-black/60"
+              className="relative my-0 w-full max-w-5xl overflow-hidden rounded-[1.35rem] border border-white/[0.1] bg-slate-950 shadow-2xl shadow-black/60 sm:my-auto sm:rounded-[1.75rem]"
               onClick={(event) => event.stopPropagation()}
             >
               {/* =================================================
@@ -172,19 +170,17 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                 whileTap={{
                   scale: 0.9,
                 }}
-                className="absolute right-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.12] bg-black/45 text-slate-300 shadow-lg backdrop-blur-xl transition-colors duration-300 hover:border-orange-400/30 hover:bg-orange-500/20 hover:text-white sm:right-5 sm:top-5"
+                className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.12] bg-black/50 text-slate-300 shadow-lg backdrop-blur-xl transition-colors duration-300 hover:border-orange-400/30 hover:bg-orange-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-orange-400/40 sm:right-5 sm:top-5"
               >
                 <X size={19} />
               </motion.button>
 
               <div className="grid md:grid-cols-2">
-
                 {/* =================================================
                     IMAGE SECTION
                 ================================================== */}
 
-                <div className="relative min-h-[330px] overflow-hidden md:min-h-[620px]">
-
+                <div className="relative min-h-[280px] overflow-hidden sm:min-h-[360px] md:min-h-[620px]">
                   {/* Image */}
 
                   <motion.img
@@ -245,9 +241,9 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                         delay: 0.25,
                         duration: 0.45,
                       }}
-                      className="absolute left-5 top-5"
+                      className="absolute left-4 top-4 sm:left-5 sm:top-5"
                     >
-                      <div className="flex items-center gap-2 rounded-full border border-orange-300/20 bg-orange-500/90 px-3.5 py-2 text-xs font-bold text-white shadow-xl shadow-orange-900/30 backdrop-blur-md">
+                      <div className="flex items-center gap-1.5 rounded-full border border-orange-300/20 bg-orange-500/90 px-3 py-2 text-[10px] font-bold text-white shadow-xl shadow-orange-900/30 backdrop-blur-md sm:gap-2 sm:px-3.5 sm:text-xs">
                         <motion.span
                           animate={{
                             rotate: [0, 10, -10, 0],
@@ -258,7 +254,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                             repeatDelay: 2,
                           }}
                         >
-                          <Sparkles size={13} />
+                          <Sparkles size={12} />
                         </motion.span>
 
                         Popular Choice
@@ -283,17 +279,16 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                       delay: 0.3,
                       duration: 0.5,
                     }}
-                    className="absolute bottom-5 left-5 right-5"
+                    className="absolute bottom-4 left-4 right-4 sm:bottom-5 sm:left-5 sm:right-5"
                   >
-                    <div className="flex items-center justify-between gap-3">
-
+                    <div className="flex items-center justify-between gap-2 sm:gap-3">
                       {/* Category */}
 
                       <motion.span
                         whileHover={{
                           scale: 1.04,
                         }}
-                        className="rounded-full border border-white/10 bg-black/45 px-3.5 py-2 text-xs font-semibold text-white shadow-lg backdrop-blur-md"
+                        className="min-w-0 max-w-[65%] truncate rounded-full border border-white/10 bg-black/45 px-3 py-2 text-[10px] font-semibold text-white shadow-lg backdrop-blur-md sm:px-3.5 sm:text-xs"
                       >
                         {item.category}
                       </motion.span>
@@ -304,11 +299,11 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                         whileHover={{
                           scale: 1.05,
                         }}
-                        className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/45 px-3.5 py-2 text-xs font-semibold text-white shadow-lg backdrop-blur-md"
+                        className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-black/45 px-3 py-2 text-[10px] font-semibold text-white shadow-lg backdrop-blur-md sm:px-3.5 sm:text-xs"
                       >
                         <Star
-                          size={13}
-                          className="fill-orange-400 text-orange-400"
+                          size={12}
+                          className="fill-orange-400 text-orange-400 sm:h-[13px] sm:w-[13px]"
                         />
 
                         {item.rating}
@@ -321,10 +316,8 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                     DETAILS SECTION
                 ================================================== */}
 
-                <div className="flex flex-col p-6 sm:p-8 md:p-10">
-
+                <div className="flex min-w-0 flex-col p-5 sm:p-8 md:p-10">
                   <div className="flex-1">
-
                     {/* Category */}
 
                     <motion.p
@@ -339,7 +332,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                       transition={{
                         delay: 0.15,
                       }}
-                      className="text-[10px] font-bold uppercase tracking-[0.22em] text-orange-400"
+                      className="text-[9px] font-bold uppercase tracking-[0.2em] text-orange-400 sm:text-[10px] sm:tracking-[0.22em]"
                     >
                       {item.category}
                     </motion.p>
@@ -359,7 +352,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                         delay: 0.2,
                         duration: 0.5,
                       }}
-                      className="mt-3 pr-8 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl"
+                      className="mt-2 pr-8 text-2xl font-black leading-tight tracking-tight text-white sm:mt-3 sm:text-4xl"
                     >
                       {item.name}
                     </motion.h2>
@@ -380,10 +373,9 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                       transition={{
                         delay: 0.28,
                       }}
-                      className="mt-5 flex flex-wrap items-center gap-3"
+                      className="mt-4 flex flex-wrap items-center gap-2.5 sm:mt-5 sm:gap-3"
                     >
-                      <div className="flex items-center gap-1">
-
+                      <div className="flex items-center gap-0.5 sm:gap-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <motion.span
                             key={star}
@@ -402,19 +394,18 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                             }}
                           >
                             <Star
-                              size={16}
+                              size={14}
                               className={
                                 star <= Math.round(item.rating)
-                                  ? "fill-orange-400 text-orange-400"
-                                  : "text-slate-700"
+                                  ? "fill-orange-400 text-orange-400 sm:h-4 sm:w-4"
+                                  : "text-slate-700 sm:h-4 sm:w-4"
                               }
                             />
                           </motion.span>
                         ))}
-
                       </div>
 
-                      <span className="text-sm text-slate-400">
+                      <span className="text-xs text-slate-400 sm:text-sm">
                         {item.rating} rating
                       </span>
                     </motion.div>
@@ -434,7 +425,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                         delay: 0.35,
                         duration: 0.5,
                       }}
-                      className="my-7 h-px origin-left bg-gradient-to-r from-orange-400/20 via-white/10 to-transparent"
+                      className="my-5 h-px origin-left bg-gradient-to-r from-orange-400/20 via-white/10 to-transparent sm:my-7"
                     />
 
                     {/* Description */}
@@ -451,7 +442,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                       transition={{
                         delay: 0.38,
                       }}
-                      className="text-sm leading-7 text-slate-400 sm:text-base"
+                      className="text-xs leading-6 text-slate-400 sm:text-base sm:leading-7"
                     >
                       {item.description}
                     </motion.p>
@@ -460,8 +451,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                         FEATURE CARDS
                     ================================================== */}
 
-                    <div className="mt-7 grid grid-cols-2 gap-3">
-
+                    <div className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-7 sm:gap-3">
                       <motion.div
                         initial={{
                           opacity: 0,
@@ -477,22 +467,22 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                         whileHover={{
                           y: -3,
                         }}
-                        className="group rounded-xl border border-white/[0.08] bg-white/[0.025] p-4 transition-colors duration-300 hover:border-orange-400/20 hover:bg-orange-500/[0.04]"
+                        className="group min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.025] p-3 transition-colors duration-300 hover:border-orange-400/20 hover:bg-orange-500/[0.04] sm:p-4"
                       >
                         <div className="flex items-center gap-2">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/10">
+                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-orange-500/10">
                             <Check
                               size={14}
                               className="text-orange-400"
                             />
                           </div>
 
-                          <p className="text-xs text-slate-500">
+                          <p className="truncate text-[10px] text-slate-500 sm:text-xs">
                             Quality
                           </p>
                         </div>
 
-                        <p className="mt-2 text-sm font-semibold text-white">
+                        <p className="mt-2 truncate text-xs font-semibold text-white sm:text-sm">
                           Premium
                         </p>
                       </motion.div>
@@ -512,22 +502,22 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                         whileHover={{
                           y: -3,
                         }}
-                        className="group rounded-xl border border-white/[0.08] bg-white/[0.025] p-4 transition-colors duration-300 hover:border-orange-400/20 hover:bg-orange-500/[0.04]"
+                        className="group min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.025] p-3 transition-colors duration-300 hover:border-orange-400/20 hover:bg-orange-500/[0.04] sm:p-4"
                       >
                         <div className="flex items-center gap-2">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/10">
+                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-orange-500/10">
                             <Check
                               size={14}
                               className="text-orange-400"
                             />
                           </div>
 
-                          <p className="text-xs text-slate-500">
+                          <p className="truncate text-[10px] text-slate-500 sm:text-xs">
                             Preparation
                           </p>
                         </div>
 
-                        <p className="mt-2 text-sm font-semibold text-white">
+                        <p className="mt-2 truncate text-xs font-semibold text-white sm:text-sm">
                           Freshly Made
                         </p>
                       </motion.div>
@@ -550,17 +540,15 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                     transition={{
                       delay: 0.45,
                     }}
-                    className="mt-8 border-t border-white/[0.08] pt-6"
+                    className="mt-6 border-t border-white/[0.08] pt-5 sm:mt-8 sm:pt-6"
                   >
-
                     {/* Price + Quantity */}
 
-                    <div className="flex items-end justify-between gap-4">
-
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                       {/* Price */}
 
                       <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 sm:text-[11px]">
                           Price
                         </p>
 
@@ -574,7 +562,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                             opacity: 1,
                             y: 0,
                           }}
-                          className="mt-1 text-3xl font-black text-orange-400"
+                          className="mt-1 text-2xl font-black text-orange-400 sm:text-3xl"
                         >
                           ${item.price.toFixed(2)}
                         </motion.p>
@@ -582,8 +570,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
 
                       {/* Quantity */}
 
-                      <div className="flex items-center overflow-hidden rounded-xl border border-white/[0.1] bg-white/[0.03]">
-
+                      <div className="flex w-fit items-center overflow-hidden rounded-xl border border-white/[0.1] bg-white/[0.03]">
                         <motion.button
                           type="button"
                           whileHover={{
@@ -595,7 +582,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                             scale: 0.9,
                           }}
                           onClick={decreaseQuantity}
-                          className="flex h-11 w-11 items-center justify-center text-slate-400 transition-colors"
+                          className="flex h-11 w-11 items-center justify-center text-slate-400 transition-colors focus:outline-none focus:ring-1 focus:ring-orange-400/40"
                           aria-label="Decrease quantity"
                         >
                           <Minus size={16} />
@@ -636,7 +623,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                             scale: 0.9,
                           }}
                           onClick={increaseQuantity}
-                          className="flex h-11 w-11 items-center justify-center text-slate-400 transition-colors"
+                          className="flex h-11 w-11 items-center justify-center text-slate-400 transition-colors focus:outline-none focus:ring-1 focus:ring-orange-400/40"
                           aria-label="Increase quantity"
                         >
                           <Plus size={16} />
@@ -648,7 +635,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
 
                     <motion.div
                       layout
-                      className="mt-4 flex items-center justify-between rounded-xl border border-orange-400/10 bg-orange-500/[0.04] px-4 py-3"
+                      className="mt-3 flex items-center justify-between gap-4 rounded-xl border border-orange-400/10 bg-orange-500/[0.04] px-4 py-3 sm:mt-4"
                     >
                       <span className="text-xs font-medium text-slate-500">
                         Total
@@ -691,7 +678,7 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
                             }
                           : {}
                       }
-                      className={`relative mt-4 flex h-13 w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-5 py-3.5 text-sm font-bold text-white shadow-lg transition-all duration-300 ${
+                      className={`relative mt-3 flex min-h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-4 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300 sm:mt-4 sm:min-h-[52px] ${
                         isAdding
                           ? "bg-emerald-500 shadow-emerald-500/20"
                           : "bg-orange-500 shadow-orange-500/20 hover:bg-orange-400 hover:shadow-orange-500/30"
@@ -768,4 +755,3 @@ function FoodDetailsModal({ item, isOpen, onClose }) {
 }
 
 export default FoodDetailsModal;
-

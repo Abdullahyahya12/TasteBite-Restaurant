@@ -1,4 +1,3 @@
-
 import {
   ArrowRight,
   ChevronLeft,
@@ -71,9 +70,7 @@ function Hero() {
 
     const timer = setInterval(() => {
       setActiveSlide((current) =>
-        current === slides.length - 1
-          ? 0
-          : current + 1
+        current === slides.length - 1 ? 0 : current + 1
       );
     }, 5000);
 
@@ -90,24 +87,20 @@ function Hero() {
 
   const goToNext = () => {
     setActiveSlide((current) =>
-      current === slides.length - 1
-        ? 0
-        : current + 1
+      current === slides.length - 1 ? 0 : current + 1
     );
   };
 
   const goToPrevious = () => {
     setActiveSlide((current) =>
-      current === 0
-        ? slides.length - 1
-        : current - 1
+      current === 0 ? slides.length - 1 : current - 1
     );
   };
 
   return (
     <section
       id="home"
-      className="relative min-h-screen overflow-hidden bg-slate-950 text-white"
+      className="relative min-h-[100svh] overflow-hidden bg-slate-950 text-white"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -145,7 +138,7 @@ function Hero() {
           <img
             src={currentSlide.image}
             alt={currentSlide.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-center"
           />
         </motion.div>
       </AnimatePresence>
@@ -154,11 +147,15 @@ function Hero() {
           CINEMATIC OVERLAYS
       ================================================= */}
 
-      <div className="absolute inset-0 bg-black/45" />
+      <div className="absolute inset-0 bg-black/50" />
 
-      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-black/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/75 to-black/25" />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/35" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/40" />
+
+      {/* Mobile readability overlay */}
+
+      <div className="absolute inset-0 bg-black/20 sm:bg-transparent" />
 
       {/* Orange ambient glow */}
 
@@ -179,8 +176,8 @@ function Hero() {
           MAIN CONTENT
       ================================================= */}
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6 pb-24 pt-28 lg:px-8">
-        <div className="grid w-full items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl items-center px-4 pb-28 pt-28 sm:px-6 sm:pb-32 sm:pt-32 lg:px-8 lg:pb-28 lg:pt-28">
+        <div className="grid w-full items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
 
           {/* =================================================
               LEFT CONTENT
@@ -205,7 +202,7 @@ function Hero() {
                 duration: 0.65,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="max-w-3xl"
+              className="w-full max-w-3xl"
             >
               {/* Eyebrow */}
 
@@ -222,11 +219,11 @@ function Hero() {
                   delay: 0.15,
                   duration: 0.5,
                 }}
-                className="mb-6 flex items-center gap-3"
+                className="mb-5 flex items-center gap-2.5 sm:mb-6 sm:gap-3"
               >
-                <span className="h-px w-10 bg-orange-400" />
+                <span className="h-px w-7 bg-orange-400 sm:w-10" />
 
-                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-orange-400">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-orange-400 sm:text-xs sm:tracking-[0.3em]">
                   {currentSlide.category}
                 </span>
               </motion.div>
@@ -246,7 +243,7 @@ function Hero() {
                   delay: 0.2,
                   duration: 0.7,
                 }}
-                className="max-w-3xl text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl"
+                className="max-w-3xl break-words text-[2.8rem] font-black leading-[0.94] tracking-[-0.04em] sm:text-6xl sm:tracking-tight md:text-7xl lg:text-8xl"
               >
                 {currentSlide.name}
               </motion.h1>
@@ -266,7 +263,7 @@ function Hero() {
                   delay: 0.3,
                   duration: 0.6,
                 }}
-                className="mt-5 text-xl font-medium text-orange-300 sm:text-2xl"
+                className="mt-4 max-w-xl text-lg font-medium leading-snug text-orange-300 sm:mt-5 sm:text-2xl"
               >
                 {currentSlide.subtitle}
               </motion.p>
@@ -286,7 +283,7 @@ function Hero() {
                   delay: 0.4,
                   duration: 0.6,
                 }}
-                className="mt-5 max-w-xl text-sm leading-7 text-slate-300 sm:text-base"
+                className="mt-4 max-w-xl text-sm leading-6 text-slate-300 sm:mt-5 sm:text-base sm:leading-7"
               >
                 {currentSlide.description}
               </motion.p>
@@ -306,29 +303,27 @@ function Hero() {
                   delay: 0.5,
                   duration: 0.6,
                 }}
-                className="mt-7 flex flex-wrap items-center gap-5"
+                className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 sm:mt-7 sm:gap-5"
               >
                 {/* Rating */}
 
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map(
-                      (star) => (
-                        <Star
-                          key={star}
-                          size={15}
-                          fill="currentColor"
-                          className="text-orange-400"
-                        />
-                      )
-                    )}
+                <div className="flex min-w-0 items-center gap-2">
+                  <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        size={14}
+                        fill="currentColor"
+                        className="text-orange-400 sm:h-[15px] sm:w-[15px]"
+                      />
+                    ))}
                   </div>
 
                   <span className="text-sm font-semibold text-white">
                     {currentSlide.rating}
                   </span>
 
-                  <span className="text-sm text-slate-400">
+                  <span className="hidden text-sm text-slate-400 sm:inline">
                     Guest rating
                   </span>
                 </div>
@@ -337,7 +332,7 @@ function Hero() {
 
                 {/* Price */}
 
-                <div className="text-2xl font-bold text-white">
+                <div className="text-xl font-bold text-white sm:text-2xl">
                   {currentSlide.price}
                 </div>
               </motion.div>
@@ -357,7 +352,7 @@ function Hero() {
                   delay: 0.6,
                   duration: 0.6,
                 }}
-                className="mt-9 flex flex-wrap items-center gap-4"
+                className="mt-7 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:items-center sm:mt-9 sm:gap-4"
               >
                 {/* Menu Button */}
 
@@ -370,7 +365,7 @@ function Hero() {
                   whileTap={{
                     scale: 0.97,
                   }}
-                  className="group inline-flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-orange-500/20 transition-all duration-300 hover:bg-orange-400 hover:shadow-orange-500/30 sm:px-7"
+                  className="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3.5 text-sm font-bold text-white shadow-xl shadow-orange-500/20 transition-all duration-300 hover:bg-orange-400 hover:shadow-orange-500/30 min-[420px]:w-auto sm:px-7"
                 >
                   Explore Menu
 
@@ -399,9 +394,9 @@ function Hero() {
                   whileTap={{
                     scale: 0.97,
                   }}
-                  className="group inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/10 sm:px-7"
+                  className="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/10 min-[420px]:w-auto sm:px-7"
                 >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10">
                     <Play
                       size={12}
                       fill="currentColor"
@@ -465,7 +460,6 @@ function Hero() {
 
                 <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-black/25 p-3 shadow-2xl backdrop-blur-xl">
                   <div className="relative overflow-hidden rounded-[1.5rem]">
-
                     <img
                       src={currentSlide.image}
                       alt=""
@@ -476,26 +470,27 @@ function Hero() {
 
                     {/* Card content */}
 
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-orange-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-orange-300 sm:text-xs sm:tracking-[0.25em]">
                         Today's highlight
                       </p>
 
-                      <h2 className="mt-2 text-2xl font-bold text-white">
+                      <h2 className="mt-2 text-xl font-bold text-white sm:text-2xl">
                         {currentSlide.name}
                       </h2>
 
-                      <div className="mt-4 flex items-center justify-between">
+                      <div className="mt-4 flex items-center justify-between gap-3">
                         <span className="text-lg font-bold text-white">
                           {currentSlide.price}
                         </span>
 
-                        <span className="flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
+                        <span className="flex shrink-0 items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
                           <Star
                             size={12}
                             fill="currentColor"
                             className="text-orange-400"
                           />
+
                           {currentSlide.rating}
                         </span>
                       </div>
@@ -512,71 +507,55 @@ function Hero() {
           SLIDE CONTROLS
       ================================================= */}
 
-      <div className="absolute bottom-8 left-0 right-0 z-20">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">
+      <div className="absolute bottom-5 left-0 right-0 z-20 sm:bottom-7 lg:bottom-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
 
           {/* Slide counter */}
 
-          <div className="flex items-center gap-3 text-xs font-medium text-slate-300">
+          <div className="flex shrink-0 items-center gap-2 text-xs font-medium text-slate-300 sm:gap-3">
             <span className="text-sm font-bold text-white">
-              {String(
-                activeSlide + 1
-              ).padStart(2, "0")}
+              {String(activeSlide + 1).padStart(2, "0")}
             </span>
 
-            <span className="h-px w-8 bg-white/30" />
+            <span className="h-px w-5 bg-white/30 sm:w-8" />
 
             <span>
-              {String(
-                slides.length
-              ).padStart(2, "0")}
+              {String(slides.length).padStart(2, "0")}
             </span>
           </div>
 
           {/* Dots */}
 
-          <div className="flex items-center gap-2">
-            {slides.map(
-              (slide, index) => {
-                const isActive =
-                  index === activeSlide;
+          <div className="flex min-w-0 items-center justify-center gap-1 sm:gap-2">
+            {slides.map((slide, index) => {
+              const isActive = index === activeSlide;
 
-                return (
-                  <button
-                    key={slide.id}
-                    type="button"
-                    onClick={() =>
-                      goToSlide(index)
-                    }
-                    aria-label={`Go to slide ${
-                      index + 1
-                    }`}
-                    className="group flex h-6 items-center justify-center"
-                  >
-                    <motion.span
-                      animate={{
-                        width: isActive
-                          ? 32
-                          : 8,
-                        opacity:
-                          isActive
-                            ? 1
-                            : 0.45,
-                      }}
-                      transition={{
-                        duration: 0.3,
-                      }}
-                      className="block h-1.5 rounded-full bg-white group-hover:opacity-100"
-                    />
-                  </button>
-                );
-              }
-            )}
+              return (
+                <button
+                  key={slide.id}
+                  type="button"
+                  onClick={() => goToSlide(index)}
+                  aria-label={`Go to slide ${index + 1}`}
+                  className="group flex h-7 w-7 items-center justify-center sm:h-6 sm:w-auto"
+                >
+                  <motion.span
+                    animate={{
+                      width: isActive ? 28 : 7,
+                      opacity: isActive ? 1 : 0.45,
+                    }}
+                    transition={{
+                      duration: 0.3,
+                    }}
+                    className="block h-1.5 rounded-full bg-white group-hover:opacity-100 sm:h-1"
+                  />
+                </button>
+              );
+            })}
           </div>
 
           {/* Arrows */}
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <motion.button
               type="button"
               onClick={goToPrevious}
@@ -590,7 +569,7 @@ function Hero() {
               className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/10"
               aria-label="Previous slide"
             >
-              <ChevronLeft size={19} />
+              <ChevronLeft size={18} />
             </motion.button>
 
             <motion.button
@@ -606,7 +585,7 @@ function Hero() {
               className="flex h-10 w-10 items-center justify-center rounded-full border border-orange-400/40 bg-orange-500 text-white shadow-lg shadow-orange-500/20 transition-all duration-300 hover:bg-orange-400"
               aria-label="Next slide"
             >
-              <ChevronRight size={19} />
+              <ChevronRight size={18} />
             </motion.button>
           </div>
         </div>
@@ -649,4 +628,3 @@ function Hero() {
 }
 
 export default Hero;
-

@@ -1,463 +1,914 @@
 import {
+  AlertCircle,
+  ArrowLeft,
   CheckCircle2,
   Clock3,
-  PackageCheck,
-  ChefHat,
-  Trash2,
-  ArrowLeft,
+  MapPin,
+  Package,
+  Phone,
+  RefreshCw,
   ShoppingBag,
+  Truck,
+  Utensils,
+  X,
+  XCircle,
 } from "lucide-react";
+
+import {
+  AnimatePresence,
+  motion,
+} from "motion/react";
+
 import { useEffect, useState } from "react";
 
-const statusSteps = [
-  {
-    key: "Pending",
-    label: "Pending",
-    icon: Clock3,
-  },
-  {
-    key: "Preparing",
-    label: "Preparing",
-    icon: ChefHat,
-  },
-  {
-    key: "Delivered",
-    label: "Delivered",
-    icon: PackageCheck,
-  },
-  {
-    key: "Completed",
-    label: "Completed",
-    icon: CheckCircle2,
-  },
-];
+import { API_BASE_URL } from "../config/api";
+import { useAuth } from "../context/AuthContext";
 
-const statusIndex = {
-  Pending: 0,
-  Preparing: 1,
-  Delivered: 2,
-  Completed: 3,
-};
+function OrderHistory() {
+  const { token } = useAuth();
 
-function OrderHistory({ onBack }) {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [cancellingId, setCancellingId] = useState(null);
+  const [cancelModal, setCancelModal] = useState(null);
+
+  // =====================================================
+  // FETCH ORDERS
+  // =====================================================
+
+  const fetchOrders = async () => {
+    if (!token) {
+      setOrders([]);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch(
+        `${API_BASE_URL}/orders/my-orders`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message ||
+            "Unable to fetch your orders."
+        );
+      }
+
+      setOrders(
+        Array.isArray(data.orders)
+          ? data.orders
+          : []
+      );
+    } catch (err) {
+      console.error(
+        "Order history error:",
+        err
+      );
+
+      setError(
+        err.message ||
+          "Unable to load your order history."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    try {
-      const savedOrders = localStorage.getItem(
-        "restaurant-order-history"
-      );
+    fetchOrders();
+  }, [token]);
 
-      setOrders(savedOrders ? JSON.parse(savedOrders) : []);
-    } catch {
-      setOrders([]);
+  // =====================================================
+  // GO BACK
+  // =====================================================
+
+  const handleGoBack = () => {
+    window.history.back();
+  };
+
+  // =====================================================
+  // CANCEL ORDER
+  // =====================================================
+
+  const handleCancelOrder = async (orderId) => {
+    if (!token || !orderId) {
+      return;
     }
-  }, []);
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    setOrders((currentOrders) => {
-      const updatedOrders = currentOrders.map((order) =>
-        order.id === orderId
-          ? {
-              ...order,
-              status: newStatus,
-            }
-          : order
+    try {
+      setCancellingId(orderId);
+      setError("");
+
+      const response = await fetch(
+        `${API_BASE_URL}/orders/${orderId}/cancel`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      localStorage.setItem(
-        "restaurant-order-history",
-        JSON.stringify(updatedOrders)
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message ||
+            "Unable to cancel the order."
+        );
+      }
+
+      setOrders((currentOrders) =>
+        currentOrders.map((order) =>
+          order._id === orderId
+            ? {
+                ...order,
+                orderStatus:
+                  data.order?.orderStatus ||
+                  "Cancelled",
+                paymentStatus:
+                  data.order?.paymentStatus ||
+                  order.paymentStatus,
+              }
+            : order
+        )
       );
 
-      return updatedOrders;
-    });
+      setCancelModal(null);
+    } catch (err) {
+      console.error(
+        "Cancel order error:",
+        err
+      );
+
+      setError(
+        err.message ||
+          "Unable to cancel the order."
+      );
+    } finally {
+      setCancellingId(null);
+    }
   };
 
-  const clearHistory = () => {
-    localStorage.removeItem("restaurant-order-history");
-    setOrders([]);
-  };
+  // =====================================================
+  // HELPERS
+  // =====================================================
 
-  const formatDate = (date) => {
-    if (!date) return "Unknown date";
-
-    return new Date(date).toLocaleString("en-US", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
+  const canCancelOrder = (orderStatus) => {
+    return (
+      orderStatus === "Pending" ||
+      orderStatus === "Confirmed"
+    );
   };
 
   const getStatusClasses = (status) => {
     switch (status) {
-      case "Pending":
-        return "border-amber-400/20 bg-amber-400/10 text-amber-400";
+      case "Delivered":
+        return "border-emerald-400/20 bg-emerald-500/10 text-emerald-300";
+
+      case "Confirmed":
+        return "border-blue-400/20 bg-blue-500/10 text-blue-300";
 
       case "Preparing":
-        return "border-blue-400/20 bg-blue-400/10 text-blue-400";
+        return "border-amber-400/20 bg-amber-500/10 text-amber-300";
 
-      case "Delivered":
-        return "border-violet-400/20 bg-violet-400/10 text-violet-400";
+      case "Out for Delivery":
+        return "border-purple-400/20 bg-purple-500/10 text-purple-300";
 
-      case "Completed":
-        return "border-emerald-400/20 bg-emerald-400/10 text-emerald-400";
+      case "Cancelled":
+        return "border-red-400/20 bg-red-500/10 text-red-300";
 
       default:
-        return "border-slate-400/20 bg-slate-400/10 text-slate-400";
+        return "border-orange-400/20 bg-orange-500/10 text-orange-300";
     }
   };
 
-  return (
-    <main className="min-h-screen bg-slate-950 px-4 py-10 text-white sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+  const getPaymentClasses = (status) => {
+    switch (status) {
+      case "Paid":
+        return "text-emerald-400";
 
-        {/* Header */}
-        <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <button
-              type="button"
-              onClick={onBack}
-              className="mb-5 inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-orange-400"
+      case "Refunded":
+        return "text-purple-400";
+
+      default:
+        return "text-amber-400";
+    }
+  };
+
+  const formatDate = (date) => {
+    if (!date) {
+      return "N/A";
+    }
+
+    return new Date(date).toLocaleString(
+      "en-PK",
+      {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }
+    );
+  };
+
+  const formatPrice = (amount) => {
+    return `Rs. ${Number(
+      amount || 0
+    ).toLocaleString()}`;
+  };
+
+  // =====================================================
+  // LOADING
+  // =====================================================
+
+  if (loading) {
+    return (
+      <section className="min-h-screen bg-slate-950 px-4 py-24 text-white sm:px-6 sm:py-28 lg:px-8">
+        <div className="mx-auto flex max-w-6xl items-center justify-center py-24 sm:py-28">
+          <div className="flex flex-col items-center text-center">
+            <motion.div
+              animate={{
+                rotate: 360,
+              }}
+              transition={{
+                duration: 1,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="flex h-14 w-14 items-center justify-center rounded-2xl border border-orange-400/20 bg-orange-500/10"
             >
-              <ArrowLeft size={17} />
-              Back to Restaurant
-            </button>
+              <RefreshCw
+                size={24}
+                className="text-orange-400"
+              />
+            </motion.div>
 
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-400">
-              Your Orders
-            </p>
-
-            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              Order History
-            </h1>
-
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
-              Track your orders and view their current status.
+            <p className="mt-5 text-sm font-semibold text-slate-300">
+              Loading your orders...
             </p>
           </div>
-
-          {orders.length > 0 && (
-            <button
-              type="button"
-              onClick={clearHistory}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-400 transition hover:border-red-500/40 hover:bg-red-500/15"
-            >
-              <Trash2 size={16} />
-              Clear History
-            </button>
-          )}
         </div>
+      </section>
+    );
+  }
 
-        {/* Empty State */}
-        {orders.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-white/[0.03] px-6 py-16 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-400">
-              <ShoppingBag size={30} />
+  // =====================================================
+  // PAGE
+  // =====================================================
+
+  return (
+    <section className="min-h-screen overflow-hidden bg-slate-950 px-4 py-24 text-white sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+      <div className="mx-auto max-w-6xl">
+
+        {/* BACK BUTTON */}
+
+        <motion.button
+          type="button"
+          initial={{
+            opacity: 0,
+            x: -15,
+          }}
+          animate={{
+            opacity: 1,
+            x: 0,
+          }}
+          whileHover={{
+            x: -3,
+          }}
+          whileTap={{
+            scale: 0.97,
+          }}
+          onClick={handleGoBack}
+          className="mb-7 inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-bold text-slate-300 transition-all duration-300 hover:border-orange-400/30 hover:bg-orange-500/10 hover:text-orange-400 sm:mb-8"
+        >
+          <ArrowLeft size={17} />
+          Back
+        </motion.button>
+
+        {/* HEADER */}
+
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 25,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            duration: 0.6,
+          }}
+        >
+          <div className="flex items-start gap-3 sm:items-center">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-orange-400/20 bg-orange-500/10">
+              <ShoppingBag
+                size={20}
+                className="text-orange-400"
+              />
             </div>
 
-            <h2 className="mt-6 text-xl font-semibold text-white">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-400 sm:text-xs">
+                TasteBite
+              </p>
+
+              <h1 className="mt-0.5 text-2xl font-black tracking-tight sm:text-4xl">
+                Order History
+              </h1>
+            </div>
+          </div>
+
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-400 sm:leading-7">
+            View your previous orders, track their
+            current status, and cancel eligible
+            orders.
+          </p>
+        </motion.div>
+
+        {/* ERROR */}
+
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: -10,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                y: -10,
+              }}
+              className="mt-7 flex items-start gap-3 rounded-2xl border border-red-400/20 bg-red-500/10 p-4 sm:mt-8"
+            >
+              <AlertCircle
+                size={20}
+                className="mt-0.5 shrink-0 text-red-400"
+              />
+
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-red-300">
+                  Something went wrong
+                </p>
+
+                <p className="mt-1 break-words text-xs leading-5 text-red-300/70 sm:text-sm">
+                  {error}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* EMPTY */}
+
+        {!error && orders.length === 0 && (
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 25,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.025] px-5 py-16 text-center backdrop-blur-xl sm:mt-10 sm:px-6 sm:py-20"
+          >
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-orange-400/20 bg-orange-500/10">
+              <Package
+                size={28}
+                className="text-orange-400"
+              />
+            </div>
+
+            <h2 className="mt-5 text-xl font-bold text-white">
               No orders yet
             </h2>
 
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">
-              Once you place an order, it will appear here with its
-              current status and details.
+              You haven't placed any orders yet.
+              Your orders will appear here after
+              checkout.
             </p>
+          </motion.div>
+        )}
 
-            <button
-              type="button"
-              onClick={onBack}
-              className="mt-7 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-400"
-            >
-              Explore Menu
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-7">
-            {orders.map((order) => {
-              const currentStatus =
-                order.status || "Pending";
+        {/* ORDERS */}
 
-              const currentStatusIndex =
-                statusIndex[currentStatus] ?? 0;
+        <div className="mt-8 space-y-5 sm:mt-10 sm:space-y-6">
+          <AnimatePresence>
+            {orders.map((order, index) => {
+              const canCancel =
+                canCancelOrder(
+                  order.orderStatus
+                );
+
+              const isCancelling =
+                cancellingId === order._id;
 
               return (
-                <article
-                  key={order.id}
-                  className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] shadow-xl shadow-black/10"
+                <motion.article
+                  key={order._id}
+                  initial={{
+                    opacity: 0,
+                    y: 25,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.05,
+                  }}
+                  className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] shadow-2xl shadow-black/10 backdrop-blur-xl sm:rounded-3xl"
                 >
-                  {/* Order Header */}
-                  <div className="flex flex-col gap-4 border-b border-white/10 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <h2 className="text-lg font-semibold text-white">
-                          Order #{order.orderNumber}
-                        </h2>
+                  {/* ORDER TOP */}
 
-                        <span
-                          className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClasses(
-                            currentStatus
-                          )}`}
-                        >
-                          {currentStatus}
-                        </span>
-                      </div>
+                  <div className="border-b border-white/[0.07] p-4 sm:p-6">
+                    <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
 
-                      <p className="mt-2 text-xs text-slate-500">
-                        {formatDate(order.createdAt)}
-                      </p>
-                    </div>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                          <span className="text-sm font-bold text-white">
+                            Order #
+                            {String(
+                              order._id
+                            ).slice(-8)}
+                          </span>
 
-                    <div className="text-left sm:text-right">
-                      <p className="text-xs uppercase tracking-wider text-slate-500">
-                        Total
-                      </p>
-
-                      <p className="mt-1 text-xl font-bold text-orange-400">
-                        ${Number(order.total || 0).toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Status Progress */}
-                  <div className="border-b border-white/10 px-5 py-7 sm:px-6">
-                    <div className="grid grid-cols-4 gap-2">
-                      {statusSteps.map((step, index) => {
-                        const Icon = step.icon;
-                        const isCompleted =
-                          index <= currentStatusIndex;
-                        const isCurrent =
-                          index === currentStatusIndex;
-
-                        return (
-                          <div
-                            key={step.key}
-                            className="relative text-center"
+                          <span
+                            className={`inline-flex min-h-7 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold sm:px-3 sm:text-xs ${getStatusClasses(
+                              order.orderStatus
+                            )}`}
                           >
-                            {index <
-                              statusSteps.length - 1 && (
-                              <div
-                                className={`absolute left-1/2 top-5 hidden h-0.5 w-full sm:block ${
-                                  index <
-                                  currentStatusIndex
-                                    ? "bg-orange-500"
-                                    : "bg-white/10"
-                                }`}
+                            {order.orderStatus ===
+                            "Delivered" ? (
+                              <CheckCircle2
+                                size={13}
+                              />
+                            ) : order.orderStatus ===
+                              "Cancelled" ? (
+                              <XCircle
+                                size={13}
+                              />
+                            ) : (
+                              <Clock3
+                                size={13}
                               />
                             )}
 
-                            <div
-                              className={`relative z-10 mx-auto flex h-10 w-10 items-center justify-center rounded-full border transition ${
-                                isCompleted
-                                  ? "border-orange-500 bg-orange-500 text-white"
-                                  : "border-white/10 bg-slate-900 text-slate-600"
-                              } ${
-                                isCurrent
-                                  ? "ring-4 ring-orange-500/10"
-                                  : ""
-                              }`}
-                            >
-                              <Icon size={17} />
-                            </div>
+                            {order.orderStatus}
+                          </span>
+                        </div>
 
-                            <p
-                              className={`mt-3 text-[11px] font-semibold sm:text-xs ${
-                                isCompleted
-                                  ? "text-white"
-                                  : "text-slate-600"
-                              }`}
-                            >
-                              {step.label}
-                            </p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Customer Info */}
-                  <div className="grid gap-5 border-b border-white/10 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-slate-500">
-                        Customer
-                      </p>
-                      <p className="mt-1 text-sm font-medium text-slate-200">
-                        {order.customer?.name || "—"}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-slate-500">
-                        Phone
-                      </p>
-                      <p className="mt-1 text-sm font-medium text-slate-200">
-                        {order.customer?.phone || "—"}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-slate-500">
-                        Order Type
-                      </p>
-                      <p className="mt-1 text-sm font-medium capitalize text-slate-200">
-                        {order.orderType || "—"}
-                      </p>
-                    </div>
-
-                    {order.orderType === "delivery" && (
-                      <div className="sm:col-span-2 lg:col-span-3">
-                        <p className="text-xs uppercase tracking-wider text-slate-500">
-                          Delivery Address
-                        </p>
-
-                        <p className="mt-1 text-sm font-medium text-slate-200">
-                          {order.customer?.address || "—"}
-                          {order.customer?.city
-                            ? `, ${order.customer.city}`
-                            : ""}
+                        <p className="mt-2 text-[11px] text-slate-500 sm:text-xs">
+                          {formatDate(
+                            order.createdAt
+                          )}
                         </p>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Items */}
-                  <div className="border-b border-white/10 p-5 sm:p-6">
-                    <h3 className="text-sm font-semibold text-white">
-                      Order Items
-                    </h3>
+                      <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center sm:gap-6">
+                        <div className="min-w-0">
+                          <p className="text-[10px] text-slate-500 sm:text-xs">
+                            Total
+                          </p>
 
-                    <div className="mt-4 space-y-3">
-                      {order.items?.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center justify-between gap-4 rounded-2xl border border-white/5 bg-black/10 p-3"
-                        >
-                          <div className="flex min-w-0 items-center gap-3">
-                            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-900">
-                              {item.image ? (
-                                <img
-                                  src={item.image}
-                                  alt={item.name}
-                                  className="h-full w-full object-cover"
-                                />
-                              ) : (
-                                <div className="flex h-full w-full items-center justify-center">
-                                  <ShoppingBag
-                                    size={18}
-                                    className="text-slate-600"
-                                  />
-                                </div>
-                              )}
-                            </div>
-
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold text-white">
-                                {item.name}
-                              </p>
-
-                              <p className="mt-1 text-xs text-slate-500">
-                                Qty: {item.quantity}
-                              </p>
-                            </div>
-                          </div>
-
-                          <p className="shrink-0 text-sm font-semibold text-slate-200">
-                            $
-                            {(
-                              Number(item.price || 0) *
-                              Number(item.quantity || 0)
-                            ).toFixed(2)}
+                          <p className="mt-1 truncate text-base font-black text-orange-400 sm:text-lg">
+                            {formatPrice(
+                              order.totalAmount
+                            )}
                           </p>
                         </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Summary */}
-                  <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1fr_auto]">
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-slate-500">
-                        Estimated Time
-                      </p>
+                        <div className="min-w-0">
+                          <p className="text-[10px] text-slate-500 sm:text-xs">
+                            Payment
+                          </p>
 
-                      <p className="mt-1 text-sm font-medium text-slate-200">
-                        {order.estimatedTime || "25–40 min"}
-                      </p>
-                    </div>
-
-                    <div className="w-full max-w-sm space-y-2 text-sm lg:min-w-[280px]">
-                      <div className="flex justify-between text-slate-400">
-                        <span>Subtotal</span>
-                        <span>
-                          ${Number(order.subtotal || 0).toFixed(2)}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between text-slate-400">
-                        <span>Delivery Fee</span>
-                        <span>
-                          ${Number(order.deliveryFee || 0).toFixed(2)}
-                        </span>
-                      </div>
-
-                      <div className="mt-3 flex justify-between border-t border-white/10 pt-3 font-semibold text-white">
-                        <span>Total</span>
-                        <span className="text-orange-400">
-                          ${Number(order.total || 0).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Demo Status Controls */}
-                  <div className="border-t border-white/10 bg-black/10 p-5 sm:p-6">
-                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
-                      Order Status Controls
-                    </p>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {statusSteps.map((step) => {
-                        const isActive =
-                          step.key === currentStatus;
-
-                        const stepIsBefore =
-                          statusIndex[step.key] <
-                          currentStatusIndex;
-
-                        return (
-                          <button
-                            key={step.key}
-                            type="button"
-                            disabled={
-                              isActive || stepIsBefore
-                            }
-                            onClick={() =>
-                              updateOrderStatus(
-                                order.id,
-                                step.key
-                              )
-                            }
-                            className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
-                              isActive
-                                ? "border-orange-500/30 bg-orange-500/10 text-orange-400"
-                                : stepIsBefore
-                                ? "cursor-not-allowed border-white/5 bg-white/[0.02] text-slate-700"
-                                : "border-white/10 bg-white/5 text-slate-400 hover:border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-400"
-                            }`}
+                          <p
+                            className={`mt-1 truncate text-xs font-bold sm:text-sm ${getPaymentClasses(
+                              order.paymentStatus
+                            )}`}
                           >
-                            {step.label}
-                          </button>
-                        );
-                      })}
+                            {order.paymentStatus}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </article>
+
+                  {/* ORDER CONTENT */}
+
+                  <div className="grid gap-6 p-4 sm:p-6 lg:grid-cols-[1fr_280px]">
+
+                    {/* ITEMS */}
+
+                    <div className="min-w-0">
+                      <div className="mb-4 flex items-center gap-2">
+                        <Package
+                          size={17}
+                          className="text-orange-400"
+                        />
+
+                        <h3 className="text-sm font-bold text-white">
+                          Ordered Items
+                        </h3>
+                      </div>
+
+                      <div className="space-y-3">
+                        {order.items?.map(
+                          (item, itemIndex) => (
+                            <div
+                              key={
+                                item._id ||
+                                itemIndex
+                              }
+                              className="flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-white/[0.06] bg-black/10 p-3 sm:gap-4"
+                            >
+                              <div className="flex min-w-0 items-center gap-3">
+                                {item.image ? (
+                                  <img
+                                    src={
+                                      item.image
+                                    }
+                                    alt={
+                                      item.name
+                                    }
+                                    loading="lazy"
+                                    className="h-12 w-12 shrink-0 rounded-xl object-cover sm:h-14 sm:w-14"
+                                  />
+                                ) : (
+                                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 sm:h-14 sm:w-14">
+                                    <Utensils
+                                      size={20}
+                                      className="text-orange-400"
+                                    />
+                                  </div>
+                                )}
+
+                                <div className="min-w-0">
+                                  <p className="truncate text-xs font-bold text-white sm:text-sm">
+                                    {item.name}
+                                  </p>
+
+                                  <p className="mt-1 text-[10px] text-slate-500 sm:text-xs">
+                                    {item.quantity} ×{" "}
+                                    {formatPrice(
+                                      item.price
+                                    )}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <p className="shrink-0 text-xs font-bold text-slate-200 sm:text-sm">
+                                {formatPrice(
+                                  Number(
+                                    item.price ||
+                                      0
+                                  ) *
+                                    Number(
+                                      item.quantity ||
+                                        0
+                                    )
+                                )}
+                              </p>
+                            </div>
+                          )
+                        )}
+                      </div>
+
+                      {/* PRICE SUMMARY */}
+
+                      <div className="mt-5 space-y-2 rounded-2xl border border-white/[0.06] bg-black/10 p-4">
+                        <div className="flex items-center justify-between gap-4 text-xs sm:text-sm">
+                          <span className="text-slate-500">
+                            Subtotal
+                          </span>
+
+                          <span className="text-right text-slate-300">
+                            {formatPrice(
+                              order.subtotal
+                            )}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-4 text-xs sm:text-sm">
+                          <span className="text-slate-500">
+                            Delivery Fee
+                          </span>
+
+                          <span className="text-right text-slate-300">
+                            {formatPrice(
+                              order.deliveryFee
+                            )}
+                          </span>
+                        </div>
+
+                        <div className="my-2 border-t border-white/[0.06]" />
+
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="text-sm font-bold text-white">
+                            Total
+                          </span>
+
+                          <span className="text-sm font-black text-orange-400 sm:text-base">
+                            {formatPrice(
+                              order.totalAmount
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* ORDER DETAILS */}
+
+                    <div className="min-w-0">
+                      <div className="mb-4 flex items-center gap-2">
+                        <Truck
+                          size={17}
+                          className="text-orange-400"
+                        />
+
+                        <h3 className="text-sm font-bold text-white">
+                          Order Details
+                        </h3>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="rounded-2xl border border-white/[0.06] bg-black/10 p-4">
+                          <p className="text-xs text-slate-500">
+                            Order Type
+                          </p>
+
+                          <p className="mt-1 text-sm font-bold capitalize text-slate-200">
+                            {order.orderType}
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl border border-white/[0.06] bg-black/10 p-4">
+                          <p className="text-xs text-slate-500">
+                            Payment Method
+                          </p>
+
+                          <p className="mt-1 break-words text-sm font-bold text-slate-200">
+                            {order.paymentMethod}
+                          </p>
+                        </div>
+
+                        {order.customerPhone && (
+                          <div className="rounded-2xl border border-white/[0.06] bg-black/10 p-4">
+                            <div className="flex items-center gap-2">
+                              <Phone
+                                size={14}
+                                className="text-orange-400"
+                              />
+
+                              <p className="text-xs text-slate-500">
+                                Phone
+                              </p>
+                            </div>
+
+                            <p className="mt-1 break-all text-sm font-bold text-slate-200">
+                              {
+                                order.customerPhone
+                              }
+                            </p>
+                          </div>
+                        )}
+
+                        {order.orderType ===
+                          "delivery" &&
+                          order.deliveryAddress && (
+                            <div className="rounded-2xl border border-white/[0.06] bg-black/10 p-4">
+                              <div className="flex items-center gap-2">
+                                <MapPin
+                                  size={14}
+                                  className="text-orange-400"
+                                />
+
+                                <p className="text-xs text-slate-500">
+                                  Delivery Address
+                                </p>
+                              </div>
+
+                              <p className="mt-1 break-words text-sm leading-6 text-slate-300">
+                                {
+                                  order.deliveryAddress
+                                }
+                              </p>
+
+                              {order.deliveryCity && (
+                                <p className="mt-1 text-xs text-slate-500">
+                                  {
+                                    order.deliveryCity
+                                  }
+                                </p>
+                              )}
+                            </div>
+                          )}
+                      </div>
+
+                      {/* CANCEL BUTTON */}
+
+                      {canCancel && (
+                        <motion.button
+                          type="button"
+                          whileHover={{
+                            scale: 1.02,
+                          }}
+                          whileTap={{
+                            scale: 0.98,
+                          }}
+                          disabled={
+                            isCancelling
+                          }
+                          onClick={() =>
+                            setCancelModal(
+                              order
+                            )
+                          }
+                          className="mt-5 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-300 transition-all duration-300 hover:border-red-400/40 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <XCircle
+                            size={17}
+                          />
+
+                          {isCancelling
+                            ? "Cancelling..."
+                            : "Cancel Order"}
+                        </motion.button>
+                      )}
+
+                      {!canCancel &&
+                        order.orderStatus !==
+                          "Cancelled" &&
+                        order.orderStatus !==
+                          "Delivered" && (
+                          <p className="mt-5 text-center text-xs leading-5 text-slate-500">
+                            This order can no longer
+                            be cancelled because
+                            preparation has started.
+                          </p>
+                        )}
+                    </div>
+                  </div>
+                </motion.article>
               );
             })}
-          </div>
-        )}
+          </AnimatePresence>
+        </div>
       </div>
-    </main>
+
+      {/* =====================================================
+          CANCEL CONFIRMATION MODAL
+      ===================================================== */}
+
+      <AnimatePresence>
+        {cancelModal && (
+          <motion.div
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+            }}
+            exit={{
+              opacity: 0,
+            }}
+            className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/70 p-4 py-6 backdrop-blur-md sm:py-8"
+            onClick={() =>
+              !cancellingId &&
+              setCancelModal(null)
+            }
+          >
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 20,
+                scale: 0.96,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                y: 20,
+                scale: 0.96,
+              }}
+              transition={{
+                duration: 0.25,
+              }}
+              onClick={(event) =>
+                event.stopPropagation()
+              }
+              className="my-auto w-full max-w-md rounded-3xl border border-white/10 bg-slate-900 p-5 shadow-2xl shadow-black/40 sm:p-6"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-500/10">
+                  <XCircle
+                    size={24}
+                    className="text-red-400"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  disabled={Boolean(
+                    cancellingId
+                  )}
+                  onClick={() =>
+                    setCancelModal(null)
+                  }
+                  aria-label="Close cancellation dialog"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl p-2 text-slate-500 transition hover:bg-white/5 hover:text-white disabled:opacity-50"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <h2 className="mt-5 text-xl font-black text-white">
+                Cancel this order?
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-slate-400">
+                Are you sure you want to cancel
+                this order? This action cannot be
+                undone.
+              </p>
+
+              {cancelModal.paymentStatus ===
+                "Paid" && (
+                <div className="mt-4 rounded-2xl border border-purple-400/20 bg-purple-500/10 p-4">
+                  <p className="text-xs leading-5 text-purple-300">
+                    This order has already been paid.
+                    The payment status will be
+                    changed to{" "}
+                    <strong>Refunded</strong>.
+                  </p>
+                </div>
+              )}
+
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  disabled={Boolean(
+                    cancellingId
+                  )}
+                  onClick={() =>
+                    setCancelModal(null)
+                  }
+                  className="flex min-h-11 flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-slate-300 transition hover:bg-white/10 hover:text-white disabled:opacity-50"
+                >
+                  Keep Order
+                </button>
+
+                <motion.button
+                  type="button"
+                  whileHover={{
+                    scale: 1.02,
+                  }}
+                  whileTap={{
+                    scale: 0.98,
+                  }}
+                  disabled={Boolean(
+                    cancellingId
+                  )}
+                  onClick={() =>
+                    handleCancelOrder(
+                      cancelModal._id
+                    )
+                  }
+                  className="flex min-h-11 flex-1 items-center justify-center rounded-xl bg-red-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {cancellingId
+                    ? "Cancelling..."
+                    : "Yes, Cancel"}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
   );
 }
 

@@ -95,20 +95,19 @@ function FoodGallery() {
   return (
     <section
       id="gallery"
-      className="relative overflow-hidden bg-slate-950 px-6 py-24 lg:px-8"
+      className="relative overflow-hidden bg-slate-950 px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28"
     >
       {/* Background Glow */}
-      <div className="pointer-events-none absolute left-1/2 top-20 h-72 w-72 -translate-x-1/2 rounded-full bg-orange-500/10 blur-[120px]" />
+      <div className="pointer-events-none absolute left-1/2 top-16 h-56 w-56 -translate-x-1/2 rounded-full bg-orange-500/10 blur-[100px] sm:top-20 sm:h-72 sm:w-72 sm:blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl">
-
         {/* Section Header */}
         <div className="mx-auto max-w-2xl text-center">
           <motion.span
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex rounded-full border border-orange-400/20 bg-orange-400/10 px-4 py-2 text-sm font-medium text-orange-300 backdrop-blur-md"
+            className="inline-flex rounded-full border border-orange-400/20 bg-orange-400/10 px-3.5 py-2 text-xs font-medium text-orange-300 backdrop-blur-md sm:px-4 sm:text-sm"
           >
             Food Gallery
           </motion.span>
@@ -118,12 +117,10 @@ function FoodGallery() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="mt-5 text-4xl font-black tracking-tight text-white sm:text-5xl"
+            className="mt-5 text-[2.25rem] font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-6xl"
           >
             A taste for
-            <span className="text-orange-400">
-              {" "}every moment.
-            </span>
+            <span className="text-orange-400"> every moment.</span>
           </motion.h2>
 
           <motion.p
@@ -131,7 +128,7 @@ function FoodGallery() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="mx-auto mt-5 max-w-xl text-base leading-7 text-slate-400 sm:text-lg"
+            className="mx-auto mt-5 max-w-xl text-sm leading-6 text-slate-400 sm:text-lg sm:leading-7"
           >
             Explore our signature dishes, freshly prepared with
             premium ingredients and served with passion.
@@ -139,21 +136,21 @@ function FoodGallery() {
         </div>
 
         {/* Slider Controls */}
-        <div className="mt-10 flex items-center justify-center gap-3">
+        <div className="mt-8 flex items-center justify-center gap-2.5 sm:mt-10 sm:gap-3">
           <button
             type="button"
             onClick={previousSlide}
             aria-label="Previous food"
-            className="group flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 backdrop-blur-md transition-all duration-300 hover:border-orange-400/40 hover:bg-orange-500 hover:text-white"
+            className="group flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 backdrop-blur-md transition-all duration-300 hover:border-orange-400/40 hover:bg-orange-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-orange-400/40 sm:h-12 sm:w-12"
           >
             <ChevronLeft
-              size={21}
-              className="transition-transform duration-300 group-hover:-translate-x-0.5"
+              size={20}
+              className="transition-transform duration-300 group-hover:-translate-x-0.5 sm:h-[21px] sm:w-[21px]"
             />
           </button>
 
-          <div className="flex h-12 items-center rounded-full border border-white/10 bg-white/5 px-5 backdrop-blur-md">
-            <span className="text-sm font-medium text-slate-400">
+          <div className="flex h-11 min-w-[78px] items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 backdrop-blur-md sm:h-12 sm:min-w-[82px] sm:px-5">
+            <span className="text-xs font-medium text-slate-400 sm:text-sm">
               <span className="text-white">
                 {String(currentIndex + 1).padStart(2, "0")}
               </span>
@@ -166,17 +163,17 @@ function FoodGallery() {
             type="button"
             onClick={nextSlide}
             aria-label="Next food"
-            className="group flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 backdrop-blur-md transition-all duration-300 hover:border-orange-400/40 hover:bg-orange-500 hover:text-white"
+            className="group flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 backdrop-blur-md transition-all duration-300 hover:border-orange-400/40 hover:bg-orange-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-orange-400/40 sm:h-12 sm:w-12"
           >
             <ChevronRight
-              size={21}
-              className="transition-transform duration-300 group-hover:translate-x-0.5"
+              size={20}
+              className="transition-transform duration-300 group-hover:translate-x-0.5 sm:h-[21px] sm:w-[21px]"
             />
           </button>
         </div>
 
         {/* Gallery Cards */}
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:mt-12 sm:gap-5 md:grid-cols-3 md:gap-6">
           {visibleItems.map((item, index) => (
             <motion.article
               key={`${item.id}-${currentIndex}-${index}`}
@@ -194,13 +191,14 @@ function FoodGallery() {
                 duration: 0.55,
                 delay: index * 0.08,
               }}
-              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-slate-900 shadow-2xl shadow-black/20"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900 shadow-2xl shadow-black/20 sm:rounded-3xl"
             >
               {/* Image */}
-              <div className="relative aspect-[4/5] overflow-hidden">
+              <div className="relative aspect-[4/5] min-h-[380px] overflow-hidden sm:min-h-0">
                 <img
                   src={item.image}
                   alt={item.name}
+                  loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
 
@@ -210,34 +208,34 @@ function FoodGallery() {
                 <div className="absolute inset-0 bg-orange-500/0 transition duration-500 group-hover:bg-orange-500/5" />
 
                 {/* Top Badges */}
-                <div className="absolute left-5 right-5 top-5 flex items-center justify-between">
-                  <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md">
+                <div className="absolute left-3 right-3 top-3 flex items-start justify-between gap-2 sm:left-5 sm:right-5 sm:top-5">
+                  <span className="max-w-[55%] truncate rounded-full border border-white/10 bg-black/30 px-2.5 py-1.5 text-[11px] font-semibold text-white backdrop-blur-md sm:px-3 sm:text-xs">
                     {item.category}
                   </span>
 
-                  <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md">
+                  <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-black/30 px-2.5 py-1.5 text-[11px] font-semibold text-white backdrop-blur-md sm:px-3 sm:text-xs">
                     <Star
-                      size={13}
-                      className="fill-orange-400 text-orange-400"
+                      size={12}
+                      className="fill-orange-400 text-orange-400 sm:h-[13px] sm:w-[13px]"
                     />
                     {item.rating}
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="absolute inset-x-0 bottom-0 p-6">
-                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-orange-300">
+                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-orange-300 sm:text-xs sm:tracking-[0.2em]">
                     Chef's Selection
                   </p>
 
-                  <h3 className="mt-2 text-2xl font-bold text-white">
+                  <h3 className="mt-2 text-xl font-bold leading-tight text-white sm:text-2xl">
                     {item.name}
                   </h3>
 
-                  <div className="mt-4 flex items-center gap-3">
-                    <div className="h-px w-10 bg-orange-400 transition-all duration-500 group-hover:w-16" />
+                  <div className="mt-3 flex items-center gap-2.5 sm:mt-4 sm:gap-3">
+                    <div className="h-px w-8 bg-orange-400 transition-all duration-500 group-hover:w-16 sm:w-10" />
 
-                    <span className="text-xs text-slate-300">
+                    <span className="text-[11px] text-slate-300 sm:text-xs">
                       Freshly prepared
                     </span>
                   </div>
@@ -248,19 +246,26 @@ function FoodGallery() {
         </div>
 
         {/* Indicators */}
-        <div className="mt-9 flex justify-center gap-2">
+        <div className="mt-7 flex items-center justify-center gap-2 sm:mt-9">
           {galleryItems.map((item, index) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setCurrentIndex(index)}
               aria-label={`Go to gallery item ${index + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                currentIndex === index
-                  ? "w-8 bg-orange-500"
-                  : "w-1.5 bg-white/20 hover:bg-white/40"
+              aria-current={currentIndex === index ? "true" : undefined}
+              className={`flex min-h-6 items-center justify-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400/40 ${
+                currentIndex === index ? "w-8" : "w-5"
               }`}
-            />
+            >
+              <span
+                className={`block h-1.5 rounded-full transition-all duration-300 ${
+                  currentIndex === index
+                    ? "w-8 bg-orange-500"
+                    : "w-1.5 bg-white/20 group-hover:bg-white/40"
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>
