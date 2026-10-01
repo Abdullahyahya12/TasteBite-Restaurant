@@ -25,16 +25,22 @@ import AuthProvider, {
   useAuth,
 } from "./context/AuthContext";
 
-function AppContent() {
-  const [showCheckout, setShowCheckout] =
-    useState(false);
+function navigateTo(path) {
+  if (window.location.pathname === path) {
+    return;
+  }
 
-  const [showOrderHistory, setShowOrderHistory] =
-    useState(false);
+  window.history.pushState({}, "", path);
 
-  const [showAdminOrders, setShowAdminOrders] =
-    useState(false);
+  window.dispatchEvent(
+    new PopStateEvent("popstate")
+  );
+}
 
+function AppContent({
+  currentPath,
+  onPathChange,
+}) {
   const {
     user,
     isAuthenticated,
@@ -44,39 +50,32 @@ function AppContent() {
     isAuthenticated &&
     user?.role === "admin";
 
-  // =========================
-  // Open Checkout
-  // =========================
+  const isCheckoutPage =
+    currentPath === "/checkout";
+
+  const isOrderHistoryPage =
+    currentPath === "/orders";
+
+  const isAdminOrdersPage =
+    currentPath === "/admin/orders";
 
   const handleOpenCheckout = () => {
-    setShowCheckout(true);
-    setShowOrderHistory(false);
-    setShowAdminOrders(false);
+    navigateTo("/checkout");
 
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
   };
-
-  // =========================
-  // Open Order History
-  // =========================
 
   const handleOpenOrderHistory = () => {
-    setShowCheckout(false);
-    setShowOrderHistory(true);
-    setShowAdminOrders(false);
+    navigateTo("/orders");
 
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
   };
-
-  // =========================
-  // Open Admin Orders
-  // =========================
 
   const handleOpenAdminOrders = () => {
     if (!isAdmin) {
@@ -91,9 +90,7 @@ function AppContent() {
       return;
     }
 
-    setShowCheckout(false);
-    setShowOrderHistory(false);
-    setShowAdminOrders(true);
+    navigateTo("/admin/orders");
 
     window.scrollTo({
       top: 0,
@@ -101,14 +98,8 @@ function AppContent() {
     });
   };
 
-  // =========================
-  // Back To Restaurant
-  // =========================
-
   const handleBackToRestaurant = () => {
-    setShowCheckout(false);
-    setShowOrderHistory(false);
-    setShowAdminOrders(false);
+    navigateTo("/");
 
     setTimeout(() => {
       window.scrollTo({
@@ -118,11 +109,32 @@ function AppContent() {
     }, 50);
   };
 
-  // =========================
-  // Admin Orders
-  // =========================
+  /*
+   * Checkout
+   */
+  if (isCheckoutPage) {
+    return (
+      <Checkout
+        onBack={handleBackToRestaurant}
+      />
+    );
+  }
 
-  if (showAdminOrders) {
+  /*
+   * Order History
+   */
+  if (isOrderHistoryPage) {
+    return (
+      <OrderHistory
+        onBack={handleBackToRestaurant}
+      />
+    );
+  }
+
+  /*
+   * Admin Orders
+   */
+  if (isAdminOrdersPage) {
     if (!isAdmin) {
       return (
         <div className="min-h-screen bg-slate-950 px-6 py-32 text-white">
@@ -161,34 +173,19 @@ function AppContent() {
     );
   }
 
-  // =========================
-  // Order History
-  // =========================
+  /*
+   * Unknown route
+   * Send the user back to Home.
+   */
+  if (currentPath !== "/") {
+    navigateTo("/");
 
-  if (showOrderHistory) {
-    return (
-      <OrderHistory
-        onBack={handleBackToRestaurant}
-      />
-    );
+    return null;
   }
 
-  // =========================
-  // Checkout
-  // =========================
-
-  if (showCheckout) {
-    return (
-      <Checkout
-        onBack={handleBackToRestaurant}
-      />
-    );
-  }
-
-  // =========================
-  // Main Restaurant
-  // =========================
-
+  /*
+   * Main Restaurant
+   */
   return (
     <>
       <Navbar
@@ -199,38 +196,19 @@ function AppContent() {
 
       <main>
         <Hero />
-
         <Menu />
-
         <FoodGallery />
-
         <About />
-
         <Testimonials />
-
         <Contact />
       </main>
 
       <Footer />
-
-      {/* =========================
-          Back To Top
-      ========================== */}
-
       <BackToTop />
-
-      {/* =========================
-          TasteBite Chatbot
-      ========================== */}
-
       <ChatBot />
     </>
   );
 }
-
-// =========================
-// App
-// =========================
 
 function App() {
   const [currentPath, setCurrentPath] =
@@ -254,10 +232,12 @@ function App() {
     };
   }, []);
 
-  // =========================
-  // Reset Password Page
-  // =========================
-
+  /*
+   * Reset Password Route
+   *
+   * Example:
+   * /reset-password/abc123
+   */
   const isResetPasswordPage =
     currentPath.startsWith(
       "/reset-password/"
@@ -270,7 +250,10 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <AppContent />
+        <AppContent
+          currentPath={currentPath}
+          onPathChange={setCurrentPath}
+        />
 
         <AuthModal />
       </CartProvider>

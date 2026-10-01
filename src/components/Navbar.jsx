@@ -143,6 +143,53 @@ function Navbar({
   }, []);
 
   // =====================================================
+  // HANDLE URL SECTION
+  // =====================================================
+
+  useEffect(() => {
+    const handleHashNavigation = () => {
+      const hash =
+        window.location.hash.replace(
+          "#",
+          ""
+        );
+
+      if (!hash) {
+        setActiveSection("home");
+        return;
+      }
+
+      const section =
+        document.getElementById(hash);
+
+      if (section) {
+        setActiveSection(hash);
+
+        setTimeout(() => {
+          section.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 50);
+      }
+    };
+
+    handleHashNavigation();
+
+    window.addEventListener(
+      "hashchange",
+      handleHashNavigation
+    );
+
+    return () => {
+      window.removeEventListener(
+        "hashchange",
+        handleHashNavigation
+      );
+    };
+  }, []);
+
+  // =====================================================
   // BODY SCROLL
   // =====================================================
 
@@ -164,6 +211,93 @@ function Navbar({
     setMobileMenu(false);
     setSearchOpen(false);
     setAuthMenuOpen(false);
+
+    const targetHash =
+      id === "home" ? "" : `#${id}`;
+
+    const currentPath =
+      window.location.pathname;
+
+    /*
+     * If user is on Checkout, Orders, Admin Orders,
+     * or any other page, first navigate to Home.
+     */
+    if (currentPath !== "/") {
+      const newUrl =
+        id === "home"
+          ? "/"
+          : `/#${id}`;
+
+      window.history.pushState(
+        {},
+        "",
+        newUrl
+      );
+
+      window.dispatchEvent(
+        new PopStateEvent("popstate")
+      );
+
+      /*
+       * App needs a moment to render the Home page
+       * before scrolling to the requested section.
+       */
+      if (id !== "home") {
+        setTimeout(() => {
+          const section =
+            document.getElementById(id);
+
+          if (section) {
+            section.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        }, 100);
+      } else {
+        setTimeout(() => {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }, 100);
+      }
+
+      return;
+    }
+
+    /*
+     * User is already on Home.
+     */
+    const newUrl =
+      id === "home"
+        ? "/"
+        : `/#${id}`;
+
+    window.history.pushState(
+      {},
+      "",
+      newUrl
+    );
+
+    if (id === "home") {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
+      return;
+    }
+
+    const section =
+      document.getElementById(id);
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   };
 
   // =====================================================
@@ -285,10 +419,11 @@ function Navbar({
 
           <div className="flex min-w-0 items-center justify-start">
             <motion.a
-              href="#"
-              onClick={() =>
-                handleNavClick("home")
-              }
+              href="/"
+              onClick={(event) => {
+                event.preventDefault();
+                handleNavClick("home");
+              }}
               whileHover={{
                 scale: 1.02,
               }}
@@ -357,14 +492,16 @@ function Navbar({
                       key={link.id}
                       href={
                         link.id === "home"
-                          ? "#"
-                          : `#${link.id}`
+                          ? "/"
+                          : `/#${link.id}`
                       }
-                      onClick={() =>
+                      onClick={(event) => {
+                        event.preventDefault();
+
                         handleNavClick(
                           link.id
-                        )
-                      }
+                        );
+                      }}
                       initial={{
                         opacity: 0,
                         y: -12,
@@ -974,16 +1111,17 @@ function Navbar({
                       <motion.a
                         key={link.id}
                         href={
-                          link.id ===
-                          "home"
-                            ? "#"
-                            : `#${link.id}`
+                          link.id === "home"
+                            ? "/"
+                            : `/#${link.id}`
                         }
-                        onClick={() =>
+                        onClick={(event) => {
+                          event.preventDefault();
+
                           handleNavClick(
                             link.id
-                          )
-                        }
+                          );
+                        }}
                         whileHover={{
                           x: 4,
                         }}
