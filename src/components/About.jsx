@@ -107,9 +107,10 @@ function About() {
             <div className="relative z-10 overflow-hidden rounded-[2rem] border border-white/10 bg-slate-900 p-1.5 shadow-2xl shadow-black/40 sm:rounded-[2.5rem] sm:p-2">
               <div className="relative aspect-[4/5] overflow-hidden rounded-[1.6rem] sm:rounded-[2rem]">
                 <img
-                  src="/images/chef-story.jpg"
+                  src="/images/chef-story.webp"
                   alt="TasteBite signature dining"
                   loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover transition duration-1000 hover:scale-105"
                 />
 

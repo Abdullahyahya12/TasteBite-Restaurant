@@ -16,7 +16,7 @@ const testimonials = [
     id: 1,
     name: "Sophia Williams",
     role: "Regular Guest",
-    avatar: "/images/customer-1.jpg",
+    avatar: "/images/customer-1.webp",
     rating: 5,
     text:
       "Everything about TasteBite feels thoughtfully designed. The food was exceptional, the presentation was beautiful, and the atmosphere made the entire evening feel special.",
@@ -26,7 +26,7 @@ const testimonials = [
     id: 2,
     name: "James Anderson",
     role: "Food Enthusiast",
-    avatar: "/images/customer-2.jpg",
+    avatar: "/images/customer-2.webp",
     rating: 5,
     text:
       "One of those restaurants where the quality genuinely stands out. The flavors were balanced, the ingredients tasted fresh, and the service was incredibly welcoming.",
@@ -36,7 +36,7 @@ const testimonials = [
     id: 3,
     name: "Olivia Carter",
     role: "Verified Guest",
-    avatar: "/images/customer-3.jpg",
+    avatar: "/images/customer-3.webp",
     rating: 5,
     text:
       "The attention to detail is impressive. From the first bite to the final dessert, everything felt premium without losing that warm and comfortable restaurant atmosphere.",
@@ -46,7 +46,7 @@ const testimonials = [
     id: 4,
     name: "Daniel Miller",
     role: "Regular Guest",
-    avatar: "/images/customer-4.jpg",
+    avatar: "/images/customer-4.webp",
     rating: 5,
     text:
       "Absolutely loved the experience. The food arrived beautifully presented, portions were generous, and every dish had its own character. I will definitely be coming back.",
@@ -241,6 +241,7 @@ function Testimonials() {
                         src={current.avatar}
                         alt={current.name}
                         loading="lazy"
+                        decoding="async"
                         className="relative h-24 w-24 rounded-full border-4 border-slate-900 object-cover shadow-2xl sm:h-32 sm:w-32"
                       />
 
@@ -389,6 +390,7 @@ function Testimonials() {
                     src={item.avatar}
                     alt={item.name}
                     loading="lazy"
+                    decoding="async"
                     className="h-11 w-11 shrink-0 rounded-full border border-white/10 object-cover sm:h-12 sm:w-12"
                   />
 

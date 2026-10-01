@@ -17,7 +17,7 @@ const slides = [
       "Juicy grilled beef, melted cheese, fresh vegetables and our signature sauce, served in a perfectly toasted bun.",
     price: "$12.99",
     rating: "4.9",
-    image: "/images/burger-classic.jpg",
+    image: "/images/burger-classic.webp",
     category: "Signature Burger",
   },
   {
@@ -28,7 +28,7 @@ const slides = [
       "A timeless Italian classic made with fresh mozzarella, tomato, basil and our house-made pizza sauce.",
     price: "$14.99",
     rating: "4.8",
-    image: "/images/pizza-margherita.jpg",
+    image: "/images/pizza-margherita.webp",
     category: "Wood-Fired Pizza",
   },
   {
@@ -39,7 +39,7 @@ const slides = [
       "Tender grilled chicken tossed with silky cream sauce, herbs and perfectly cooked pasta.",
     price: "$15.99",
     rating: "4.9",
-    image: "/images/pasta-chicken.jpg",
+    image: "/images/pasta-chicken.webp",
     category: "Chef's Special",
   },
   {
@@ -50,7 +50,7 @@ const slides = [
       "Tender marinated chicken grilled to perfection with aromatic herbs and our signature seasoning.",
     price: "$16.99",
     rating: "4.9",
-    image: "/images/chicken-grilled.jpg",
+    image: "/images/chicken-grilled.webp",
     category: "Grilled Special",
   },
 ];
@@ -138,6 +138,9 @@ function Hero() {
           <img
             src={currentSlide.image}
             alt={currentSlide.name}
+            loading={activeSlide === 0 ? "eager" : "lazy"}
+            fetchPriority={activeSlide === 0 ? "high" : "low"}
+            decoding="async"
             className="h-full w-full object-cover object-center"
           />
         </motion.div>
@@ -463,6 +466,9 @@ function Hero() {
                     <img
                       src={currentSlide.image}
                       alt=""
+                      loading="lazy"
+                      fetchPriority="low"
+                      decoding="async"
                       className="aspect-[4/5] w-full object-cover"
                     />
 
